@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/assets/hero.png" alt="Cyber Net Portal Banner" width="100%" style="border-radius: 8px; border: 1px solid #00d9ff; box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);"/>
+  <img src="src/assets/hero.png" alt="Cyber Net Portal Banner" width="750" style="border-radius: 8px; border: 1px solid #00d9ff; box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);"/>
 </div>
 
 <div align="center">
