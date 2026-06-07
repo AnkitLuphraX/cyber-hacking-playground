@@ -1,0 +1,920 @@
+/* ==========================================================================
+   1. Theme System & Global Variables
+   ========================================================================== */
+:root {
+  /* Dynamic Variables adjusted by CSS Customizer */
+  --primary-hue: 190; /* Default: Ice Cyan */
+  --accent-color: hsl(var(--primary-hue), 100%, 50%);
+  --accent-color-dim: hsl(var(--primary-hue), 80%, 25%);
+  --accent-color-glow: hsla(var(--primary-hue), 100%, 50%, 0.25);
+  
+  --bg-dark: #07040e;
+  --bg-card: rgba(18, 10, 32, 0.45);
+  --border-color: hsla(var(--primary-hue), 100%, 50%, 0.2);
+  --border-hover: hsla(var(--primary-hue), 100%, 50%, 0.5);
+  
+  --glass-blur: 16px;
+  --glow-radius: 10px;
+  --scanline-opacity: 0.35;
+  --flicker-opacity: 0.08;
+  
+  /* Constant Design Variables */
+  --text-primary: #f0ebff;
+  --text-secondary: #cbbde5;
+  --text-muted: #7f6e9b;
+  
+  --font-hud: 'Outfit', sans-serif;
+  --font-terminal: 'Share Tech Mono', 'Fira Code', monospace;
+  
+  --transition-speed: 0.3s;
+  --transition-bezier: cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  --shadow-glow: 0 0 var(--glow-radius) var(--accent-color-glow);
+  --shadow-glow-strong: 0 0 calc(var(--glow-radius) * 2) hsla(var(--primary-hue), 100%, 50%, 0.45);
+}
+
+/* ==========================================================================
+   2. Base Resets & Global Visual Layers
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-hud);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cybernetic Grid Vector Background */
+.cyber-grid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
+  opacity: 0.8;
+}
+
+/* CRT Scanlines Overlay */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.04),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.04)
+  );
+  background-size: 100% 4px, 6px 100%;
+  opacity: var(--scanline-opacity);
+}
+
+/* Dynamic CRT Screen Flicker Effect */
+.screen-flicker {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  pointer-events: none;
+  background: rgba(18, 16, 16, 0.2);
+  opacity: 0;
+}
+
+/* Animations */
+@keyframes crt-flicker {
+  0% { opacity: var(--flicker-opacity); }
+  50% { opacity: calc(var(--flicker-opacity) * 1.5); }
+  100% { opacity: var(--flicker-opacity); }
+}
+
+body.flickering .screen-flicker {
+  animation: crt-flicker 0.15s infinite;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(18, 10, 32, 0.3);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color-dim);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* ==========================================================================
+   3. Cybernetic HUD Header
+   ========================================================================== */
+.hud-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(12, 6, 22, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), var(--shadow-glow);
+  transition: border-color var(--transition-speed);
+}
+
+.hud-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-logo-icon {
+  font-size: 1.4rem;
+  color: var(--accent-color);
+  text-shadow: var(--shadow-glow);
+}
+
+.hud-logo-text {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+}
+
+.accent-text {
+  color: var(--accent-color);
+  text-shadow: var(--shadow-glow);
+}
+
+.hud-telemetry {
+  display: flex;
+  gap: 24px;
+}
+
+.telemetry-item {
+  font-family: var(--font-terminal);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.telemetry-item .lbl {
+  color: var(--text-muted);
+}
+
+.telemetry-item .val {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hud-clock {
+  font-family: var(--font-terminal);
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  color: var(--accent-color);
+  text-shadow: var(--shadow-glow);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   4. Buttons & Global Layout Utilities
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-hud);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s var(--transition-bezier);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-primary);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-color);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary {
+  background: var(--accent-color-dim);
+  border: 1px solid var(--accent-color);
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:hover {
+  background: var(--accent-color);
+  box-shadow: var(--shadow-glow-strong);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  border: 1px solid var(--text-muted);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.btn-hud {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-color: var(--border-color);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  transition: border-color var(--transition-speed) var(--transition-bezier),
+              box-shadow var(--transition-speed) var(--transition-bezier);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+  opacity: 0.7;
+}
+
+.glass-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6), var(--shadow-glow);
+}
+
+/* Text Colors */
+.green-text { color: #10b981 !important; }
+.yellow-text { color: #f59e0b !important; }
+.red-text { color: #ef4444 !important; }
+.cyan-text { color: #06b6d4 !important; }
+
+/* Blinking animations */
+.blink {
+  animation: visual-blink 1.2s infinite step-end;
+}
+@keyframes visual-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ==========================================================================
+   5. Workspace Layout Grids
+   ========================================================================== */
+.workspace-container {
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  flex-grow: 1;
+}
+
+@media (max-width: 1024px) {
+  .workspace-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.workspace-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ==========================================================================
+   6. CRT Terminal Component
+   ========================================================================== */
+.terminal-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 580px;
+}
+
+.terminal-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: rgba(6, 3, 12, 0.7);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.window-controls .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.window-controls .dot.red { background-color: #ef4444; }
+.window-controls .dot.yellow { background-color: #f59e0b; }
+.window-controls .dot.green { background-color: #10b981; }
+
+.terminal-title {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.terminal-status-icon {
+  font-size: 0.65rem;
+  color: #10b981;
+  text-shadow: 0 0 5px #10b981;
+}
+
+/* CLI Screen Contents */
+.terminal-output-container {
+  flex-grow: 1;
+  background: rgba(5, 2, 10, 0.95);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-terminal);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  overflow-y: auto;
+  max-height: calc(100vh - 190px);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+#terminal-output {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+#terminal-output p {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Hacking Output Items styles */
+.output-success { color: #10b981; }
+.output-info { color: var(--accent-color); }
+.output-warning { color: #f59e0b; }
+.output-error { color: #ef4444; }
+.output-dim { color: var(--text-muted); }
+
+/* CLI Input Elements */
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  padding-top: 12px;
+}
+
+.terminal-prompt {
+  color: var(--accent-color);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+#terminal-input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-terminal);
+  font-size: 0.92rem;
+  width: 100%;
+  outline: none;
+  caret-shape: block;
+}
+
+/* Matrix Screensaver Overlay mode */
+.matrix-mode {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000 !important;
+  z-index: 1000;
+  display: none;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   7. Panel Components (Radar & Oscilloscope)
+   ========================================================================== */
+.panel-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.panel-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-title .accent-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  display: inline-block;
+  box-shadow: var(--shadow-glow);
+}
+
+.panel-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.canvas-wrapper {
+  background: rgba(4, 2, 8, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Radar Telemetry Styles */
+.radar-telemetry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-terminal);
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.02);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.telemetry-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Oscilloscope Legends */
+.oscilloscope-legends {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-terminal);
+  font-size: 0.72rem;
+}
+
+.legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.legend-color.cyan-bg { background-color: #00d9ff; }
+.legend-color.magenta-bg { background-color: #ff00ff; }
+.legend-color.yellow-bg { background-color: #ffff00; }
+
+.legend-label {
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   8. Style Customizer Slide-out Drawer
+   ========================================================================== */
+.customizer-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 100vw;
+  height: 100%;
+  background: rgba(10, 5, 20, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 1000;
+  border-left: 1px solid var(--border-color);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8), var(--shadow-glow);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s var(--transition-bezier);
+}
+
+.customizer-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent-color);
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-close:hover {
+  color: var(--accent-color);
+}
+
+.drawer-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.config-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(255,255,255,0.01);
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.config-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  letter-spacing: 1px;
+}
+
+.config-sub-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+
+/* Theme selector grids */
+.theme-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.theme-btn {
+  padding: 6px 12px;
+  font-family: var(--font-terminal);
+  font-size: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.theme-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.theme-btn.active {
+  background: var(--accent-color-dim);
+  border-color: var(--accent-color);
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+
+/* Range input visual customizations */
+.hue-slider-wrapper {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  cursor: pointer;
+  box-shadow: var(--shadow-glow);
+}
+
+.slider-row, .checkbox-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-row input[type="range"] {
+  width: 120px;
+}
+
+.slider-val {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  width: 40px;
+  text-align: right;
+}
+
+/* Checkbox visual styling */
+input[type="checkbox"] {
+  accent-color: var(--accent-color);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   9. Hacking Decryption Minigame Overlay UI
+   ========================================================================== */
+.minigame-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(4, 2, 8, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.minigame-modal-overlay.open {
+  display: flex;
+}
+
+.minigame-card {
+  max-width: 580px;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.minigame-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.minigame-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-color);
+}
+
+.minigame-timer-wrapper {
+  font-size: 0.8rem;
+  display: flex;
+  gap: 8px;
+}
+
+.minigame-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  background: rgba(255, 0, 0, 0.04);
+  border: 1px solid rgba(255, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  line-height: 1.4;
+}
+
+/* Minigame Grid Cells */
+.minigame-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.minigame-cell {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-family: var(--font-terminal);
+  font-size: 0.95rem;
+  font-weight: bold;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.minigame-cell:hover {
+  border-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-glow);
+  color: var(--accent-color);
+}
+
+.minigame-cell.selected {
+  background: var(--accent-color-glow);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: var(--shadow-glow-strong);
+}
+
+.minigame-cell.matched {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  cursor: default;
+  pointer-events: none;
+}
+
+.minigame-status-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 12px;
+}
+
+.minigame-word-list {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.word-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-family: var(--font-terminal);
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  padding: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.word-item:hover, .word-item:focus {
+  border-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-glow);
+  color: var(--accent-color);
+}
+
+.word-item.selected-word {
+  background: var(--accent-color-glow);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+/* Campaign Box Card Styles */
+.campaign-objective-card {
+  border-left: 3px solid var(--accent-color) !important;
+  box-shadow: var(--shadow-glow);
+  animation: visual-pulse 2s infinite ease-in-out;
+}
+@keyframes visual-pulse {
+  0%, 100% { box-shadow: var(--shadow-glow); }
+  50% { box-shadow: 0 0 15px hsla(var(--primary-hue), 100%, 50%, 0.4); }
+}

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER_NET // Retro Hacking CLI Terminal Playground</title>
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="A state-of-the-art interactive retro-cyber hacking terminal simulator with canvas oscilloscopes, a radar map, mechanical audio synthesizers, and firewall decapsulator puzzles.">
+  <link rel="icon" type="image/png" href="/favicon.ico" />
+  
+  <!-- Modern Typographic Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  
+  <!-- CRT Glow and Scanline overlay across the whole application screen for maximum retro feel -->
+  <div class="crt-overlay"></div>
+  <div class="screen-flicker"></div>
+
+  <!-- Background Cyber grid -->
+  <div class="cyber-grid-bg"></div>
+
+  <!-- Top-Level Cybernetic HUD Header -->
+  <header class="hud-header" id="hud-header">
+    <div class="hud-brand">
+      <span class="hud-logo-icon">🖧</span>
+      <span class="hud-logo-text">CYBER_NET <span class="accent-text">// NODE_TERMINAL v2.0</span></span>
+    </div>
+    
+    <div class="hud-telemetry">
+      <div class="telemetry-item">
+        <span class="lbl">NETWORK:</span>
+        <span class="val green-text blink" id="net-status-badge">SECURE_TUNNEL</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="lbl">THREAT LEVEL:</span>
+        <span class="val yellow-text" id="threat-badge">LOW</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="lbl">COGNITIVE RATIO:</span>
+        <span class="val" id="ratio-badge">0.00%</span>
+      </div>
+    </div>
+
+    <div class="hud-actions">
+      <div class="hud-clock" id="hud-clock">00:00:00</div>
+      <button class="btn btn-hud" id="btn-toggle-customizer" aria-label="Toggle style customizer">
+        <span class="icon">⚙</span> CONFIG_SYSTEM
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Grid Workspace Layout -->
+  <main class="workspace-container">
+    
+    <!-- LEFT SIDE: Hacking CRT Terminal Console -->
+    <section class="workspace-left" id="panel-terminal">
+      <div class="glass-card terminal-card">
+        <!-- Terminal Header with control buttons -->
+        <div class="terminal-bar">
+          <div class="window-controls">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="terminal-title font-mono">root@cyber_net:~# cli-shell</div>
+          <div class="terminal-status-icon" id="terminal-status-icon">⬤</div>
+        </div>
+
+        <!-- CLI Output Area -->
+        <div class="terminal-output-container" id="terminal-output-container">
+          <div id="terminal-output">
+            <!-- Initial welcome screensaver prints here -->
+          </div>
+          
+          <!-- CLI Input Area -->
+          <div class="terminal-input-row">
+            <span class="terminal-prompt" id="terminal-prompt">guest@cyber_node:~$</span>
+            <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false" placeholder="Type 'help' to begin system scan...">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDE: Network Map & Signal Oscilloscope -->
+    <section class="workspace-right">
+      
+      <!-- RADAR NET MAP PANEL -->
+      <div class="glass-card panel-card" id="panel-radar">
+        <div class="panel-header">
+          <h2 class="panel-title"><span class="accent-dot"></span> GLOBAL NODE CONTROLLER</h2>
+          <span class="panel-subtitle">COORDINATES & TARGET MAP</span>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="radar-canvas" width="400" height="300"></canvas>
+        </div>
+        <div class="radar-telemetry" id="radar-telemetry">
+          <div class="telemetry-row">
+            <span>TARGET COMPROMISE RATE:</span>
+            <span class="val accent-text" id="radar-compromise">0% (0 / 8 Nodes)</span>
+          </div>
+          <div class="telemetry-row">
+            <span>ACTIVE FREQUENCY SWEEP:</span>
+            <span class="val" id="radar-frequency">2.44 GHz</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIGNAL OSCILLOSCOPE PANEL -->
+      <div class="glass-card panel-card" id="panel-oscilloscope">
+        <div class="panel-header">
+          <h2 class="panel-title"><span class="accent-dot"></span> TELEMETRY WAVEFORM OSCILLOSCOPE</h2>
+          <span class="panel-subtitle">REAL-TIME SIGNAL GENERATOR</span>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="oscilloscope-canvas" width="400" height="200"></canvas>
+        </div>
+        <div class="oscilloscope-legends">
+          <div class="legend-item" id="legend-cpu">
+            <span class="legend-color cyan-bg"></span>
+            <span class="legend-label">CH1: CPU LOAD (<span id="val-cpu">0%</span>)</span>
+          </div>
+          <div class="legend-item" id="legend-net">
+            <span class="legend-color magenta-bg"></span>
+            <span class="legend-label">CH2: PACKETS (<span id="val-net">0 pkts/s</span>)</span>
+          </div>
+          <div class="legend-item" id="legend-audio">
+            <span class="legend-color yellow-bg"></span>
+            <span class="legend-label">CH3: AUDIO SPECT (<span id="val-audio">MUTED</span>)</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- STYLE CUSTOMIZER SLIDE-OUT DRAWER -->
+  <aside class="customizer-drawer" id="customizer-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <h3 class="drawer-title">SYSTEM CONFIGURATION</h3>
+      <button class="btn-close" id="btn-close-customizer" aria-label="Close configuration">&times;</button>
+    </div>
+    
+    <div class="drawer-body">
+      
+      <!-- Visual Accent Palette -->
+      <div class="config-group">
+        <label class="config-label">THEME ACCENT COLOR</label>
+        <div class="theme-select-grid">
+          <button class="theme-btn active" data-hue="190" data-theme="cyan">ICE_CYAN</button>
+          <button class="theme-btn" data-hue="120" data-theme="green">MATRIX_GREEN</button>
+          <button class="theme-btn" data-hue="280" data-theme="purple">CYBER_PURPLE</button>
+          <button class="theme-btn" data-hue="35" data-theme="amber">FALLOUT_AMBER</button>
+          <button class="theme-btn" data-hue="0" data-theme="crimson">CRIMSON_WAR</button>
+        </div>
+        <div class="hue-slider-wrapper">
+          <span class="config-sub-label">FINE-TUNE HUE ANGLE</span>
+          <input type="range" id="accent-hue-slider" min="0" max="360" value="190">
+          <span class="slider-val font-mono" id="lbl-hue-val">190deg</span>
+        </div>
+      </div>
+
+      <!-- CRT / Visual Screen Parameters -->
+      <div class="config-group">
+        <label class="config-label">CRT SCREEN EMULATION</label>
+        
+        <div class="slider-row">
+          <span class="config-sub-label">SCANLINE INTENSITY</span>
+          <input type="range" id="scanline-opacity" min="0" max="100" value="35">
+          <span class="slider-val font-mono" id="lbl-scanline-val">35%</span>
+        </div>
+
+        <div class="slider-row">
+          <span class="config-sub-label">SCREEN FLICKER FREQ</span>
+          <input type="range" id="flicker-rate" min="0" max="100" value="40">
+          <span class="slider-val font-mono" id="lbl-flicker-val">40%</span>
+        </div>
+
+        <div class="slider-row">
+          <span class="config-sub-label">GLASS BLUR FACTOR</span>
+          <input type="range" id="glass-blur-slider" min="0" max="32" value="16">
+          <span class="slider-val font-mono" id="lbl-blur-val">16px</span>
+        </div>
+
+        <div class="slider-row">
+          <span class="config-sub-label">GLOW BLOOM RADIUS</span>
+          <input type="range" id="glow-radius" min="0" max="25" value="10">
+          <span class="slider-val font-mono" id="lbl-glow-val">10px</span>
+        </div>
+      </div>
+
+      <!-- Mechanical & Drone Sound Parameters -->
+      <div class="config-group">
+        <label class="config-label">SYNTHETIC AUDIO SYSTEM</label>
+        
+        <div class="checkbox-row">
+          <label for="audio-mute-checkbox" class="config-sub-label">MUTE ALL AUDIO SYNTHS</label>
+          <input type="checkbox" id="audio-mute-checkbox">
+        </div>
+
+        <div class="slider-row">
+          <span class="config-sub-label">AMBIENT DRONE VOLUME</span>
+          <input type="range" id="drone-volume" min="0" max="100" value="30">
+          <span class="slider-val font-mono" id="lbl-drone-vol-val">30%</span>
+        </div>
+
+        <div class="slider-row">
+          <span class="config-sub-label">KEYBOARD CLICK VOL</span>
+          <input type="range" id="clicks-volume" min="0" max="100" value="50">
+          <span class="slider-val font-mono" id="lbl-clicks-vol-val">50%</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="btn-reset-config">RESTORE SAFE DEFAULTS</button>
+
+    </div>
+  </aside>
+
+  <!-- CYBER DECRYPTION MINIGAME MODAL OVERLAY -->
+  <div class="minigame-modal-overlay" id="minigame-modal" aria-hidden="true">
+    <div class="glass-card minigame-card">
+      <div class="minigame-header">
+        <div class="minigame-title font-mono">⚡ FIREWALL_SECURITY_BYPASS_ENGAGED</div>
+        <div class="minigame-timer-wrapper">
+          <span class="font-mono">TIME_LEFT:</span>
+          <span id="minigame-timer-countdown" class="font-mono yellow-text blink">30.00s</span>
+        </div>
+      </div>
+      
+      <div class="minigame-body">
+        <p class="minigame-desc font-mono">
+          [!] FIREWALL HANDSHAKE FAILURE. CRITICAL PAYLOAD BIND IN PROGRESS.<br>
+          [!] INSTRUCTIONS: CLICK OR TAP MATCHING PAIRS OF CRYPTOGRAPHIC HEX BLOCKS TO DISCHARGE LOAD.
+        </p>
+
+        <!-- Dynamic Grid of Hex Cells -->
+        <div class="minigame-grid" id="minigame-grid">
+          <!-- Populated dynamically by minigame.js -->
+        </div>
+
+        <!-- Dynamic Word List for password hacking -->
+        <div class="minigame-word-list" id="minigame-word-list" style="display: none; flex-direction: column; gap: 8px; margin: 10px 0; max-height: 220px; overflow-y: auto;">
+          <!-- Populated dynamically by minigame.js -->
+        </div>
+
+        <div class="minigame-status-row font-mono">
+          <span id="minigame-progress-label">MATCHES: <span id="minigame-matches-counter">0 / 6</span></span>
+          <span id="minigame-alert-text" class="red-text"></span>
+        </div>
+      </div>
+
+      <div class="minigame-actions">
+        <button class="btn btn-secondary" id="btn-close-minigame">ABORT MISSION</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
