@@ -3,23 +3,23 @@ import { CyberAudio } from './audio.js';
 export class CyberTerminal {
   constructor(audioEngine) {
     this.audio = audioEngine;
-    
+
     // DOM Elements
     this.output = document.getElementById('terminal-output');
     this.input = document.getElementById('terminal-input');
     this.promptEl = document.getElementById('terminal-prompt');
     this.container = document.getElementById('terminal-output-container');
     this.statusIcon = document.getElementById('terminal-status-icon');
-    
+
     // Command History
     this.history = [];
     this.historyIndex = -1;
-    
+
     // System variables
     this.isLocked = false;
     this.hostname = 'guest@cyber_node:~$';
     this.typingSpeed = 22; // slightly faster typing for snappy feel
-    
+
     // Active animations
     this.activeIntervals = [];
 
@@ -31,8 +31,8 @@ export class CyberTerminal {
 
     // Available commands list for Tab Autocomplete
     this.commandsList = [
-      'help', 'scan', 'decrypt', 'ddos', 'bypass', 
-      'nodes', 'theme', 'audio', 'matrix', 'clear', 'cheat'
+      'help', 'scan', 'decrypt', 'ddos', 'bypass',
+      'nodes', 'theme', 'audio', 'matrix', 'clear', 'cheat', 'credits', 'author'
     ];
   }
 
@@ -55,7 +55,7 @@ export class CyberTerminal {
 
     // Input listeners
     this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
-    
+
     // Click to focus input
     this.container.addEventListener('click', () => {
       if (!this.matrixActive) this.input.focus();
@@ -108,11 +108,11 @@ export class CyberTerminal {
         // Cap history length to 100 entries
         if (this.history.length > 100) this.history.shift();
         this.historyIndex = this.history.length;
-        
+
         // Persist history
         try {
           localStorage.setItem('cyber_cli_history_log', JSON.stringify(this.history));
-        } catch(err) {}
+        } catch (err) { }
 
         this.executeCommand(cmd);
       }
@@ -146,7 +146,7 @@ export class CyberTerminal {
 
     // Filter matched commands
     const matches = this.commandsList.filter(cmd => cmd.startsWith(val));
-    
+
     if (matches.length === 1) {
       // Single match: complete it
       this.input.value = matches[0] + ' ';
@@ -166,7 +166,7 @@ export class CyberTerminal {
    */
   async executeCommand(fullCommand) {
     this.lock();
-    
+
     // Print user input row
     const userRow = document.createElement('div');
     userRow.className = 'terminal-input-row';
@@ -180,7 +180,7 @@ export class CyberTerminal {
 
     await this.sleep(100);
 
-    switch(cmd) {
+    switch (cmd) {
       case 'help':
         await this.cmdHelp(args);
         break;
@@ -214,6 +214,11 @@ export class CyberTerminal {
       case 'cheat':
         await this.cmdCheat();
         break;
+      case 'credits':
+      case 'author':
+      case 'ankit':
+        await this.cmdCredits();
+        break;
       default:
         await this.writeLine(`[-] COMMAND NOT FOUND: "${cmd}". Type "help" for active routes catalog.`, 'output-error');
     }
@@ -228,7 +233,7 @@ export class CyberTerminal {
     if (args[0]) {
       const topic = args[0].toLowerCase();
       await this.writeLine(`HELP ROUTE MANUAL: ${topic.toUpperCase()}`, 'output-info');
-      switch(topic) {
+      switch (topic) {
         case 'scan':
           await this.writeLine('Usage: scan [ip_address]', 'output-secondary');
           await this.writeLine('Scans open socket ports on target network servers, returning vulnerabilities status.', 'output-dim');
@@ -300,7 +305,7 @@ export class CyberTerminal {
     const checkEl = document.getElementById('audio-mute-checkbox');
     const currentlyMuted = checkEl.checked;
     checkEl.checked = !currentlyMuted;
-    
+
     this.audio.setMute(!currentlyMuted);
     await this.writeLine(currentlyMuted ? '[+] AUDIO SYNTHESIS ENGINE REACTIVATED' : '[!] ALL AUDIO SYNTHS DEACTIVATED (MUTED)', currentlyMuted ? 'output-success' : 'output-warning');
   }
@@ -332,7 +337,7 @@ export class CyberTerminal {
     }
 
     const ports = [21, 22, 80, 443, 3000, 3306, 8080];
-    
+
     for (let i = 0; i < ports.length; i++) {
       this.audio.playChirp();
       await this.sleep(150);
@@ -371,7 +376,7 @@ export class CyberTerminal {
       paragraph.textContent = lineText;
       this.output.appendChild(paragraph);
       this.scrollToBottom();
-      
+
       this.audio.playClick();
       await this.sleep(50);
     }
@@ -399,9 +404,9 @@ export class CyberTerminal {
     for (let i = 0; i < maxPings; i++) {
       this.onDdosSpike();
       this.audio.playChirp();
-      
+
       const latency = Math.floor(Math.random() * 450) + 50;
-      await this.writeLine(`  -> PING FLOOD [${i+1}/${maxPings}]: Send 512 bytes to ${ip}. RTT: ${latency}ms. LOSS: 0.0%`, 'output-warning');
+      await this.writeLine(`  -> PING FLOOD [${i + 1}/${maxPings}]: Send 512 bytes to ${ip}. RTT: ${latency}ms. LOSS: 0.0%`, 'output-warning');
       this.scrollToBottom();
       await this.sleep(80);
     }
@@ -424,7 +429,7 @@ export class CyberTerminal {
   async cmdCheat() {
     await this.writeLine('[!] CHEAT DETECTED! INJECTING OPERATOR OVERRIDE CODES...', 'output-warning');
     await this.sleep(500);
-    
+
     if (this.campaign) {
       this.audio.playAccessGranted();
       // Compromise current stage automatically
@@ -443,7 +448,7 @@ export class CyberTerminal {
    */
   cmdMatrix() {
     this.matrixActive = true;
-    
+
     this.matrixCanvas = document.createElement('canvas');
     this.matrixCanvas.className = 'matrix-mode';
     this.matrixCanvas.style.display = 'block';
@@ -453,7 +458,7 @@ export class CyberTerminal {
     window.addEventListener('resize', () => this.resizeMatrixCanvas());
 
     this.matrixCtx = this.matrixCanvas.getContext('2d');
-    
+
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=<>#@&%';
     const fontSize = 14;
     const columns = this.matrixCanvas.width / fontSize;
@@ -466,7 +471,7 @@ export class CyberTerminal {
     const draw = () => {
       this.matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       this.matrixCtx.fillRect(0, 0, this.matrixCanvas.width, this.matrixCanvas.height);
-      
+
       const hue = parseInt(document.documentElement.style.getPropertyValue('--primary-hue')) || 190;
       this.matrixCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
       this.matrixCtx.font = fontSize + 'px monospace';
@@ -474,7 +479,7 @@ export class CyberTerminal {
       for (let i = 0; i < rainDrops.length; i++) {
         const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
         this.matrixCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-        
+
         if (rainDrops[i] * fontSize > this.matrixCanvas.height && Math.random() > 0.975) {
           rainDrops[i] = 0;
         }
@@ -493,7 +498,7 @@ export class CyberTerminal {
     this.matrixCanvas.addEventListener('click', () => {
       this.closeMatrix();
     });
-    
+
     const exitTip = document.createElement('p');
     exitTip.className = 'output-info font-mono';
     exitTip.textContent = '[*] EXIT SCREENSAVER: Click anywhere on the falling-code overlay.';
@@ -558,7 +563,7 @@ export class CyberTerminal {
         if (i < text.length) {
           p.textContent += text.charAt(i);
           i++;
-          if (i % 3 === 0) this.audio.playClick(text.charAt(i-1));
+          if (i % 3 === 0) this.audio.playClick(text.charAt(i - 1));
         } else {
           clearInterval(printInterval);
           resolve();
@@ -567,5 +572,18 @@ export class CyberTerminal {
 
       this.activeIntervals.push(printInterval);
     });
+  }
+
+  async cmdCredits() {
+    await this.writeLine('====================================================', 'output-info');
+    await this.writeLine('         PORTAL ARCHITECT & SYSTEM CREATOR', 'output-success');
+    await this.writeLine('====================================================', 'output-info');
+    await this.writeLine('  OPERATOR NAME   : ANKIT LUPHRAX', 'output-secondary');
+    await this.writeLine('  GITHUB PROFILE  : @AnkitLuphraX', 'output-secondary');
+    await this.writeLine('  LICENSING CLASS : MIT STANDARD SOFTWARE COPYRIGHT', 'output-secondary');
+    await this.writeLine('  SIGNATURE HASH  : 5e883e20a0b9e8211912a236df76595b1114212c', 'output-dim');
+    await this.writeLine('----------------------------------------------------', 'output-dim');
+    await this.writeLine('[+] AUTHENTICITY STAMP CONFIRMED. AUTHOR VERIFIED.', 'output-success blink');
+    await this.writeLine('====================================================', 'output-info');
   }
 }

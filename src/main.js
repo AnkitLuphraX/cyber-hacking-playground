@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Ankit LuphraX (AnkitLuphraX) - All Rights Reserved */
 import './style.css';
 import { CyberAudio } from './modules/audio.js';
 import { CyberTerminal } from './modules/terminal.js';
@@ -80,7 +81,7 @@ function init() {
     // onSuccess
     () => {
       terminal.writeLine('[+] FIREWALL DECRYPTION COMPLETED!', 'output-success');
-      
+
       // Advance campaign stage
       const ok = campaign.registerHackSuccess();
       if (!ok) {
@@ -101,11 +102,11 @@ function init() {
       } else {
         terminal.writeLine('[!] FAIL! SECURITY LOCKDOWN TRIGGERED ON TARGET PORT.', 'output-error');
         terminal.writeLine('[!] COGNITIVE RATIO DECREASED. SHIELD TERMINAL LOCKED FOR 4s.', 'output-error');
-        
+
         terminal.lock();
         badgeStatus.textContent = 'ALARM_LOCK';
         badgeStatus.className = 'val red-text blink';
-        
+
         setTimeout(() => {
           terminal.unlock();
           badgeStatus.textContent = 'SECURE_TUNNEL';
@@ -132,7 +133,7 @@ function init() {
  */
 function startClock() {
   const pad = (val) => String(val).padStart(2, '0');
-  
+
   setInterval(() => {
     const d = new Date();
     const hrs = pad(d.getHours());
