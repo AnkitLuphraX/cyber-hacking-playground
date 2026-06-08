@@ -91,7 +91,7 @@ export class CyberBackground {
         const dy = this.mouse.y - p.y;
         const dist = Math.hypot(dx, dy);
         
-        if (dist < this.mouse.radius) {
+        if (dist < this.mouse.radius && dist > 0.1) {
           // Slowly pull particles toward mouse cursor
           const force = (this.mouse.radius - dist) / this.mouse.radius;
           p.x += (dx / dist) * force * 0.2;
